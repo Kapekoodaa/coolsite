@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>Chat Room</title>
+<style>
+body { font-family: Helvetica, Arial, sans-serif; background: #1a1a1a; color:#fff; margin:0; display:flex; align-items:center; justify-content:center; height:100vh;}
+#chat-container { width: 480px; height:640px; background:#2a2a2a; border-radius:12px; padding:18px; display:flex; flex-direction:column; box-shadow:0 0 20px rgba(106,57,96,0.5);}
+#header { display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; }
+#header h2 { margin:0; }
+.header-right { display: flex; align-items: center; gap: 10px; }
+#username-indicator {
+  background: #23234a;
+  color: #fff;
+  padding: 6px 14px;
+  border-radius: 16px;
+  font-size: 14px;
+  font-weight: bold;
+  margin-right: 0;
+  box-shadow: 0 0 6px #6a3960;
+  letter-spacing: 0.5px;
+}
+#logoutBtn {
+  background-color: #1a1a1a;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  /* Prevent stretching in flex container */
+  align-self: flex-start;  /* or center */
+  display: inline-block;   /* optional but safe */
+}
+#logoutBtn:hover { 
+  box-shadow: 0 0 15px rgba(106, 57, 96, 0.8);
+  background-color: rgb(151, 48, 151);   /* lighter purple on hover */
+  transform: scale(1.05) rotate(1deg) rotateY(-3deg);
+}
+#logoutBtn:active { 
+  transform: scale(0.95);
+}
+#backBtn {
+  background-color: #1a1a1a;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  /* Prevent stretching in flex container */
+  align-self: flex-start;  /* or center */
+  display: inline-block;   /* optional but safe */
+}
+#backBtn:hover {
+  box-shadow: 0 0 15px rgba(106, 57, 96, 0.8);
+  background-color: rgb(151, 48, 151);   /* lighter purple on hover */
+  transform: scale(1.05) rotate(1deg) rotateY(-3deg);
+}
+#backBtn:active {
+  transform: scale(0.95);
+}
+#messages { flex:1; overflow-y:auto; padding-right:6px; margin-bottom:8px; }
+.message { background:#3a3a3a; border-radius:8px; padding:8px 10px; margin-bottom:8px; position:relative; word-wrap:break-word; overflow-wrap:break-word; }
+.message .meta { font-size:12px; color:#bbb; margin-bottom:6px; }
+.message .text { white-space:pre-wrap; }
+.message .time {position: absolute; right: 10px; top: 6px; color: #aaa; font-size: 10px;}
+#input-container { display:flex; }
+#messageInput { flex:1; padding:10px; border-radius:6px 0 0 6px; border: 2px solid #6a3960; outline:none; background:#1a1a1a; color:#fff; resize:none; transition: border-color 0.3s ease, box-shadow 0.3s ease, width 0.3s ease;}
+#messageInput:hover { border-color: #9a5d8a; }
+#messageInput:focus {   border-color: #c46fad; box-shadow: 0 0 8px rgba(196, 111, 173, 0.7); background-color: #262626; width: 300px;}
+#sendBtn { background:#6a3960; color:#fff; border:none; padding:10px 14px; border-radius:0 6px 6px 0; cursor:pointer; }
+#messages::-webkit-scrollbar { width:8px; }
+#messages::-webkit-scrollbar-track { background:#2a2a2a; }
+#messages::-webkit-scrollbar-thumb { background:#6a3960; border-radius:4px; }
+
+/* Modal styles */
+#changePwdModal {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.7);
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+}
+#changePwdForm {
+  background: #23234a;
+  padding: 24px 20px 16px 20px;
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  min-width: 260px;
+  gap: 10px;
+}
+#changePwdForm h3 {
+  margin: 0 0 10px 0;
+  color: violet;
+}
+#changePwdForm input {
+  padding: 8px;
+  border-radius: 6px;
+  border: none;
+}
+#changePwdForm button {
+  cursor: pointer;
+}
+#pwdMsg {
+  font-size: 13px;
+  color: #ffb3b3;
+  margin-top: 4px;
+}
+
+#changePwdBtn {
+  background-color: #1a1a1a;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  /* Prevent stretching in flex container */
+  align-self: flex-start;  /* or center */
+  display: inline-block;   /* optional but safe */
+}
+#changePwdBtn:hover {
+  box-shadow: 0 0 15px rgba(106, 57, 96, 0.8);
+  background-color: rgb(151, 48, 151);   /* lighter purple on hover */
+  transform: scale(1.05) rotate(1deg) rotateY(-3deg);
+}
+#changePwdBtn:active {
+  transform: scale(0.95);
+}
+
+/* Modal password input styles */
+#changePwdForm input[type="password"] {
+  font-family: Helvetica, Arial, sans-serif;
+  font-weight: bold;
+  width: 120px;
+  padding: 10px 12px;
+  font-size: 16px;
+  color: #f0f0f0;
+  background-color: #1a1a1a;
+  border: 2px solid #6a3960;
+  border-radius: 6px;
+  outline: none;
+  transition: border-color 0.3s, box-shadow 0.3s, width 0.3s;
+}
+
+#changePwdForm input[type="password"]:hover {
+  border-color: #9a5d8a;
+}
+
+#changePwdForm input[type="password"]:focus {
+  border-color: #c46fad;
+  box-shadow: 0 0 8px rgba(196, 111, 173, 0.7);
+  background-color: #262626;
+  width: 230px;
+}
+
+#changePwdForm button {
+  background-color: #1a1a1a;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  /* Prevent stretching in flex container */
+  align-self: flex-start;  /* or center */
+  display: inline-block;   /* optional but safe */
+}
+#changePwdForm button:hover {
+  box-shadow: 0 0 15px rgba(106, 57, 96, 0.8);
+  background-color: rgb(151, 48, 151);   /* lighter purple on hover */
+  transform: scale(1.05) rotate(1deg) rotateY(-3deg);
+}
+#changePwdForm button:active {
+  transform: scale(0.95);
+}
+
+</style>
+</head>
+<body>
+<div id="chat-container">
+  <div id="header">
+    <button id="backBtn" class="demo-button" onclick="goBack()">Back</button>
+    <div class="header-right">
+      <span id="username-indicator">...</span>
+      <button id="changePwdBtn" class="demo-button" type="button" style="margin-right:6px;">Change Password</button>
+      <a href="/logout"><button id="logoutBtn" class="demo-button">Logout</button></a>
+    </div>
+  </div>
+
+  <div id="messages"></div>
+
+  <div id="input-container">
+    <textarea id="messageInput" rows="3" placeholder="Type a message (max 100 chars)"></textarea>
+    <button id="sendBtn">Send</button>
+  </div>
+</div>
+
+<div id="changePwdModal" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0, 0, 0, 0.61); align-items:center; justify-content:center; z-index:9999;">
+  <form id="changePwdForm" style="background:#2a2a2a; box-shadow:0 0 20px rgba(106,57,96,0.5); padding:24px 20px 16px 20px; border-radius:10px; display:flex; flex-direction:column; min-width:260px; gap:10px;">
+    <h3 style="text-align: center;font-family: Helvetica, Arial, sans-serif;color: violet;text-shadow: 0 0 10px rgba(238, 130, 238, 0.7);letter-spacing: 1px;margin-bottom: 10px;">Change Password</h3>
+    <input type="password" name="old" placeholder="Old password" required>
+    <input type="password" name="new" placeholder="New password" required>
+    <button type="submit" class="demo-button">Change</button>
+    <button type="button" id="cancelPwdBtn" class="demo-button">Cancel</button>
+    <span id="pwdMsg" style="font-size:13px; color:#ffb3b3; margin-top:4px;"></span>
+  </form>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+<script>
+const secretKey = "40mvLNx2xw7YtmwJP21CWSbNrjuvSdg8"; // MUST match server
+const maxChars = 100;
+
+function encryptAES(msg){ return CryptoJS.AES.encrypt(msg, secretKey).toString(); }
+function decryptAES(ciphertext){ return CryptoJS.AES.decrypt(ciphertext, secretKey).toString(CryptoJS.enc.Utf8); }
+function sha256(msg){ return CryptoJS.SHA256(msg).toString(); }
+
+const ws = new WebSocket('ws://' + location.host + '/ws');
+
+const messagesDiv = document.getElementById('messages');
+const input = document.getElementById('messageInput');
+const sendBtn = document.getElementById('sendBtn');
+
+// Username indicator logic
+fetch('/users/me')
+  .then(r => r.json())
+  .then(data => {
+    document.getElementById('username-indicator').textContent = data.username || 'Unknown';
+  })
+  .catch(() => {
+    document.getElementById('username-indicator').textContent = 'Unknown';
+  });
+
+function addMessage(username, text, timestamp){
+  const div = document.createElement('div');
+  div.className = 'message';
+
+  const meta = document.createElement('div');
+  meta.className = 'meta';
+  meta.textContent = username;
+
+  const textEl = document.createElement('div');
+  textEl.className = 'text';
+  textEl.textContent = text;
+
+  const time = document.createElement('div');
+  time.className = 'time';
+  time.textContent = new Date(timestamp).toLocaleTimeString([], { hour12: false });
+
+  div.appendChild(meta);
+  div.appendChild(textEl);
+  div.appendChild(time);
+
+  messagesDiv.appendChild(div);
+  messagesDiv.scrollTop = messagesDiv.scrollHeight;
+}
+
+ws.onopen = () => console.log('WS open');
+ws.onmessage = (ev) => {
+  try {
+    const obj = JSON.parse(ev.data);
+    const text = decryptAES(obj.encrypted);
+    addMessage(obj.username || 'Unknown', text, obj.time);
+  } catch (e) {
+    console.error('Bad message', e);
+  }
+};
+
+
+// limit typing
+input.addEventListener('input', () => {
+  if (input.value.length > maxChars) input.value = input.value.substring(0, maxChars);
+});
+
+let canSend = true;
+
+function sendMessage(){
+  if (!canSend) return;
+  let msg = input.value.trim();
+  if (!msg) return;
+  if (msg.length > maxChars) msg = msg.substring(0, maxChars);
+  const encrypted = encryptAES(msg);
+  const hash = sha256(msg);
+  const payload = { encrypted, hash, timestamp: new Date().toISOString() };
+  ws.send(JSON.stringify(payload));
+  input.value = '';
+  canSend = false;
+  sendBtn.disabled = true;
+  setTimeout(() => {
+    canSend = true;
+    sendBtn.disabled = false;
+  }, 500); // 0.5 seconds
+}
+
+sendBtn.addEventListener('click', sendMessage);
+input.addEventListener('keypress', (e) => {
+  if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); }
+});
+
+function goBack(){ location.href = '/'; } // change if you have a different main page
+
+// Change Password modal logic
+const changePwdBtn = document.getElementById('changePwdBtn');
+const changePwdModal = document.getElementById('changePwdModal');
+const cancelPwdBtn = document.getElementById('cancelPwdBtn');
+const changePwdForm = document.getElementById('changePwdForm');
+const pwdMsg = document.getElementById('pwdMsg');
+
+changePwdBtn.addEventListener('click', () => {
+  changePwdModal.style.display = 'flex';
+});
+
+cancelPwdBtn.addEventListener('click', () => {
+  changePwdModal.style.display = 'none';
+});
+
+changePwdForm.addEventListener('submit', (e) => {
+  e.preventDefault();
+  const formData = new FormData(changePwdForm);
+  const data = Object.fromEntries(formData);
+  fetch('/users/change-password', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data),
+  })
+  .then(response => response.json())
+  .then(result => {
+    pwdMsg.textContent = result.message;
+    if (result.success) {
+      setTimeout(() => {
+        changePwdModal.style.display = 'none';
+      }, 2000);
+    }
+  })
+  .catch(error => {
+    pwdMsg.textContent = 'Error changing password';
+    console.error('Error:', error);
+  });
+});
+</script>
+</body>
+</html>
