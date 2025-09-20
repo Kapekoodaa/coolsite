@@ -1,0 +1,155 @@
+/* ===== GLOBAL STYLES ===== */
+body {
+  background-color: black;        /* page background */
+  color: white;                   /* default text color */
+  font-family: Arial, sans-serif; /* simple readable font */
+  margin: 0;
+  padding: 20px;
+  overflow-x: hidden;             /* Prevent horizontal scroll from snowflakes */
+}
+
+/* Center container box */
+.container {
+  max-width: 800px;              /* limit width */
+  margin: 50px auto;             /* center horizontally, with top/bottom margin */
+  padding: 30px;                 /* space inside the box */
+  background-color: #0d0d0d;     /* dark background */
+  border-radius: 12px;           /* rounded corners */
+  box-shadow: 0 0 10px black, 0 0 20px violet, 0 0 30px palevioletred;
+  justify-content: center;       /* horizontal */
+  display: flex;
+  flex-direction: column;        /* stack widgets vertically */
+  gap: 25px;                     /* spacing between widgets */
+}
+
+.toptext {
+  width: 100%;          /* full width of the page */
+}
+
+.toptext h2 {
+  text-align: center;
+  font-family: Helvetica, Arial, sans-serif;
+  color: violet;
+  text-shadow: 0 0 10px rgba(238, 130, 238, 0.7);
+  letter-spacing: 1px;
+  margin-bottom: 10px;
+}
+
+/* Style headings to stand out */
+h2 {
+  color: violet;
+  text-shadow: 0 0 10px rgba(238, 130, 238, 0.7);
+  letter-spacing: 1px;
+  margin-bottom: 10px;
+}
+
+/* ===== WIDGET STYLES ===== */
+
+/* Button */
+.demo-button {
+  background-color: #1a1a1a;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  /* Prevent stretching in flex container */
+  align-self: flex-start;  /* or center */
+  display: inline-block;   /* optional but safe */
+}
+
+.demo-button:hover {
+  box-shadow: 0 0 15px rgba(106, 57, 96, 0.8);
+  background-color: rgb(151, 48, 151);   /* lighter purple on hover */
+  transform: scale(1.05) rotate(1deg) rotateY(-3deg);
+}
+
+.demo-button:active {
+  transform: scale(0.95);
+}
+
+.cards {
+  display: flex;
+  gap: 20px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.demo-card {
+  padding: 15px;
+  border-radius: 8px;
+  width: 150px;
+  transition: all 0.4s ease-in-out;
+  color: #fff;
+}
+
+/* Shared image style */
+.demo-card img {
+  width: 100%;
+  border-radius: 6px;
+}
+
+/* ===== Individual card styles ===== */
+
+/* First card: purple tone */
+.card-one {
+  background-color: #1a1a1a;
+}
+.card-one:hover {
+  transform: scale(1.1) rotate(-7deg) perspective(500px) rotateY(10deg);
+  background-color: #6a3960;
+  box-shadow: 0 0 15px rgba(106, 57, 96, 0.8);
+}
+.card-one:active {
+  transform: scale(1) rotate(-7deg) perspective(500px) rotateY(10deg);
+}
+
+/* Second card: teal tone */
+.card-two {
+  background-color: #1a1a1a;
+}
+.card-two:hover {
+  transform: scale(1.1) rotate(7deg) perspective(500px) rotateY(-10deg);
+  background-color: #6a3960;
+  box-shadow: 0 0 15px rgba(106, 57, 96, 0.8);
+}
+.card-two:active {
+  transform: scale(1) rotate(7deg) perspective(500px) rotateY(-10deg);
+}
+
+/* Input thingys */
+
+input[type="text"] {
+  font-family: Helvetica, Arial, sans-serif;
+  font-weight: bold;
+  width: 120px;              /* overall width */
+  padding: 10px 12px;        /* inside spacing */
+  font-size: 16px;           /* text size */
+  color: #f0f0f0;            /* text color */
+  background-color: #1a1a1a; /* background */
+  border: 2px solid #6a3960; /* border thickness & color */
+  border-radius: 6px;        /* rounded corners */
+  outline: none;             /* remove default focus ring */
+  transition: border-color 0.3s ease, box-shadow 0.3s ease, width 0.3s ease;
+}
+
+/* Hover effect */
+input[type="text"]:hover {
+  border-color: #9a5d8a;
+}
+
+/* Focus (when clicking inside) */
+input[type="text"]:focus {
+  border-color: #c46fad;
+  box-shadow: 0 0 8px rgba(196, 111, 173, 0.7);
+  background-color: #262626;
+  width: 300px;
+}
+
+/* Placeholder text color */
+input[type="text"]::placeholder {
+  color: #bbb;
+  opacity: 1;  /* makes sure it's not faded in some browsers */
+}

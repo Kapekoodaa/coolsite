@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Cool sigma site</title>
+
+  <!--
+    We link the external CSS file here.
+    All the page's look & feel is defined in styles.css.
+  -->
+  <link rel="stylesheet" href="./styles.css">
+  <style>
+    /* Simple Snow Effect with White Dots */
+    .snowflake {
+      position: fixed;
+      background: white;
+      border-radius: 50%;
+      width: 5px;
+      height: 5px;
+      top: -10px;
+      z-index: 9999;
+      opacity: 0.8;
+      pointer-events: none;
+      animation: snowfall linear infinite;
+      box-shadow: 0 0 3px rgba(255, 255, 255, 0.8);
+    }
+
+    @keyframes snowfall {
+      0% {
+        transform: translate(0, -10px);
+      }
+      100% {
+        transform: translate(var(--wind), 100vh);
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- ===== PAGE CONTENT ===== -->
+  
+  <!-- Create 40 simple snowflakes -->
+  <div id="snow-container"></div>
+
+  <div class="container">
+      <!-- ===== 1. BUTTON ===== -->
+    <!-- <button> creates a clickable button. -->
+    <div class="toptext">
+      <h2>AIO Site By Kape</h2>
+    </div>
+    
+    
+    <button class="demo-button">Click Me</button>
+
+    <!-- ===== 2. CARD ===== -->
+    <!-- A card is just a <div> with an image and text. -->
+    <h2>2. Card</h2>
+    <div class="cards">
+      <a href="chat/chat.html">
+        <div class="demo-card card-one">
+          <img src="./images/chat.png" alt="chat image">
+          <h3>Global chat</h3>
+          <p>Cool global chat</p>
+        </div>
+      </a>
+
+
+      <div class="demo-card card-two">
+        <img src="./images/meowl.jpg" alt="cat image">
+        <h3>second silly cat</h3>
+        <p>meowl</p>
+      </div>
+    </div>
+
+    <h2>3. Input</h2>
+    <input type="text" id="name" placeholder="Enter text...">
+
+
+    <!--
+        ===== END =====
+        Try editing styles.css to change colors, fonts, or spacing.
+    -->
+  </div>
+
+  <script>
+    // Create simple snowflakes (white dots)
+    document.addEventListener('DOMContentLoaded', function() {
+      const snowContainer = document.getElementById('snow-container');
+      const snowflakeCount = 40; // Number of snowflakes
+      
+      for (let i = 0; i < snowflakeCount; i++) {
+        const snowflake = document.createElement('div');
+        snowflake.classList.add('snowflake');
+        
+        // Random horizontal position
+        snowflake.style.left = Math.random() * 100 + 'vw';
+        
+        // Random size (2-8px)
+        const size = 2 + Math.random() * 6;
+        snowflake.style.width = size + 'px';
+        snowflake.style.height = size + 'px';
+        
+        // Random animation duration (5-20 seconds)
+        const duration = 5 + Math.random() * 15;
+        snowflake.style.animationDuration = duration + 's';
+        
+        // Random start delay
+        snowflake.style.animationDelay = Math.random() * 5 + 's';
+        
+        // Random opacity
+        snowflake.style.opacity = 0.3 + Math.random() * 0.7;
+        
+        // Add slight horizontal movement for wind effect
+        const wind = ((Math.random() - 0.5) * 100).toFixed(2); // -50px to 50px
+        snowflake.style.setProperty('--wind', wind + 'px');
+        
+        snowContainer.appendChild(snowflake);
+      }
+    });
+  </script>
+</body>
+</html>
