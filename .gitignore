@@ -1,0 +1,11 @@
+# Node.js dependencies
+node_modules/
+
+# Local uploads (optional, if you store files locally)
+uploads/
+
+# Logs
+*.log
+
+# Environment files (if you add secrets later)
+.env
