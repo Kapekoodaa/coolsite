@@ -17,6 +17,7 @@
     "crypto-js": "^4.2.0",
     "express": "^5.1.0",
     "express-session": "^1.18.2",
+    "multer": "^2.0.2",
     "ws": "^8.18.3"
   }
 }

@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Admin Panel</title>
+  <style>
+    body {
+      background: #18182a;
+      color: #fff;
+      font-family: 'Segoe UI', Helvetica, Arial, sans-serif;
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+    }
+    .admin-container {
+      margin-top: 40px;
+      background: #23234a;
+      border-radius: 16px;
+      box-shadow: 0 0 30px #6a3960;
+      padding: 32px 36px 24px 36px;
+      min-width: 420px;
+      max-width: 95vw;
+    }
+    h1 {
+      text-align: center;
+      color: violet;
+      margin-bottom: 24px;
+      text-shadow: 0 0 10px #c46fad;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 18px;
+      background: #2a2a4a;
+      border-radius: 8px;
+      overflow: hidden;
+    }
+    th, td {
+      padding: 10px 8px;
+      text-align: left;
+      border-bottom: 1px solid #44446a;
+    }
+    th {
+      background: #23234a;
+      color: #c46fad;
+      font-size: 14px;
+    }
+    tr:last-child td {
+      border-bottom: none;
+    }
+    .actions {
+      display: flex;
+      gap: 8px;
+    }
+    .btn {
+      background: #6a3960;
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      padding: 6px 10px;
+      cursor: pointer;
+      font-size: 13px;
+      transition: all 0.2s ease;
+    }
+    .btn:hover { background: #c46fad; box-shadow: 0 0 8px #c46fad; }
+    .input-pw {
+      background: #1a1a1a;
+      color: #fff;
+      border: 2px solid #6a3960;
+      border-radius: 5px;
+      padding: 5px 8px;
+      font-size: 14px;
+      width: 110px;
+      outline: none;
+      transition: border-color 0.3s, box-shadow 0.3s, width 0.3s;
+    }
+    .invite-list {
+      margin-top: 18px;
+      background: #23234a;
+      border-radius: 8px;
+      padding: 12px 16px;
+      color: #bbb;
+      font-size: 14px;
+      max-height: 180px;
+      overflow-y: auto;
+    }
+    .logout-link {
+      color: #c46fad;
+      text-decoration: none;
+      font-size: 15px;
+      float: right;
+      margin-top: -30px;
+    }
+    .msg {
+      margin-bottom: 10px;
+      color: #ffb3b3;
+      font-size: 15px;
+      min-height: 18px;
+    }
+    .section-title {
+      margin-top: 20px;
+      margin-bottom: 10px;
+      color: #c46fad;
+      text-align: left;
+      font-size: 16px;
+    }
+    a.file-link { color:#9acaff; text-decoration:none; }
+    a.file-link:hover { text-decoration:underline; }
+    .small { font-size:12px; color:#ccc; }
+  </style>
+</head>
+<body>
+  <div class="admin-container">
+    <a href="/logout" class="logout-link">Logout</a>
+    <h1>Admin Panel</h1>
+    <div class="msg" id="msg"></div>
+
+    <!-- USERS -->
+    <div class="section-title">Users</div>
+    <table id="usersTable">
+      <thead>
+        <tr>
+          <th>Username</th>
+          <th>Password (hash)</th>
+          <th>Change Password</th>
+          <th>Delete</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+
+    <!-- INVITES -->
+    <div class="invite-list" id="inviteList">
+      <b>Invite Codes:</b>
+      <button class="btn" id="genInviteBtn" style="float:right;margin-top:-4px;">Generate Invite</button>
+      <ul id="invitesUl"></ul>
+      <div id="newInviteMsg" style="margin-top:10px;color:#b3ffb3;font-size:15px;"></div>
+    </div>
+
+    <!-- FILES -->
+    <div class="section-title" style="margin-top:20px;">Uploaded Files</div>
+    <table id="filesTable">
+      <thead>
+        <tr>
+          <th style="width:18%;">ID</th>
+          <th>Original Name</th>
+          <th style="width:12%;">Uploader</th>
+          <th style="width:14%;">Uploaded At</th>
+          <th style="width:18%;">Actions</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </div>
+
+  <script>
+    function showMsg(msg) {
+      const el = document.getElementById('msg');
+      el.textContent = msg;
+      setTimeout(() => { el.textContent = ''; }, 3000);
+    }
+
+    // Fetch users & invites
+    async function fetchUsers() {
+      const res = await fetch('/admin/api/users', { credentials: 'same-origin' });
+      return res.json();
+    }
+    function renderUsers(users) {
+      const tbody = document.querySelector('#usersTable tbody');
+      tbody.innerHTML = '';
+      const entries = users && typeof users === 'object' ? Object.entries(users) : [];
+      if (entries.length === 0) {
+        const tr = document.createElement('tr');
+        tr.innerHTML = '<td colspan="4" style="text-align:center;color:#bbb;">No users found.</td>';
+        tbody.appendChild(tr);
+        return;
+      }
+      entries.forEach(([username, info]) => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${username}</td>
+          <td style="font-size:12px;word-break:break-all;">${info.password}</td>
+          <td>
+            <div class="actions">
+              <input class="input-pw" type="password" placeholder="New password" />
+              <button class="btn btn-change">Change</button>
+            </div>
+          </td>
+          <td><button class="btn btn-delete">Delete</button></td>
+        `;
+        tr.querySelector('.btn-change').onclick = async () => {
+          const newPassword = tr.querySelector('.input-pw').value;
+          if (!newPassword || newPassword.length < 4) return showMsg('Password too short');
+          const resp = await fetch('/admin/api/change-password', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ username, newPassword }),
+            credentials: 'same-origin'
+          });
+          const result = await resp.json();
+          if (result.success) showMsg('Password changed!');
+          else showMsg(result.error || 'Error');
+        };
+        tr.querySelector('.btn-delete').onclick = async () => {
+          if (!confirm('Delete user ' + username + '?')) return;
+          const resp = await fetch('/admin/api/delete-user', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ username }),
+            credentials: 'same-origin'
+          });
+          const result = await resp.json();
+          if (result.success) {
+            showMsg('User deleted!');
+            tr.remove();
+          } else showMsg(result.error || 'Error');
+        };
+        tbody.appendChild(tr);
+      });
+    }
+
+    function renderInvites(invites) {
+      const ul = document.getElementById('invitesUl');
+      ul.innerHTML = '';
+      const entries = invites && typeof invites === 'object' ? Object.entries(invites) : [];
+      if (entries.length === 0) {
+        const li = document.createElement('li');
+        li.textContent = 'No invite codes found.';
+        ul.appendChild(li);
+        return;
+      }
+      entries.forEach(([code, used]) => {
+        const li = document.createElement('li');
+        li.style.display = 'flex';
+        li.style.alignItems = 'center';
+        const copyBtn = document.createElement('button');
+        copyBtn.textContent = 'Copy';
+        copyBtn.className = 'btn';
+        copyBtn.style.padding = '3px 10px';
+        copyBtn.style.marginRight = '10px';
+        copyBtn.onclick = async () => {
+          try {
+            await navigator.clipboard.writeText(code);
+            copyBtn.textContent = 'Copied!';
+            setTimeout(() => { copyBtn.textContent = 'Copy'; }, 1200);
+          } catch {
+            copyBtn.textContent = 'Err';
+            setTimeout(() => { copyBtn.textContent = 'Copy'; }, 1200);
+          }
+        };
+        const codeSpan = document.createElement('span');
+        codeSpan.textContent = code;
+        codeSpan.style.fontWeight = 'bold';
+        codeSpan.style.marginRight = '8px';
+        codeSpan.style.color = used ? '#4cff4c' : '#ff4c4c';
+        li.appendChild(copyBtn);
+        li.appendChild(codeSpan);
+        ul.appendChild(li);
+      });
+    }
+
+    // FILES
+    async function fetchFiles() {
+      const res = await fetch('/admin/api/files', { credentials: 'same-origin' });
+      return res.json();
+    }
+
+    function renderFiles(files) {
+      const tbody = document.querySelector('#filesTable tbody');
+      tbody.innerHTML = '';
+      if (!files || Object.keys(files).length === 0) {
+        const tr = document.createElement('tr');
+        tr.innerHTML = '<td colspan="5" style="text-align:center;color:#bbb;">No files uploaded.</td>';
+        tbody.appendChild(tr);
+        return;
+      }
+      Object.entries(files).forEach(([id, meta]) => {
+        const tr = document.createElement('tr');
+        const raw = `${location.origin}/file/${id}/${encodeURIComponent(meta.original)}`;
+        const preview = `${location.origin}/f/${id}`;
+        tr.innerHTML = `
+          <td style="font-size:12px;word-break:break-all;">${id}</td>
+          <td><div style="font-weight:600">${meta.original}</div><div class="small">${meta.size ? (Math.round(meta.size/1024) + ' KB') : ''}</div></td>
+          <td>${meta.uploadedBy}</td>
+          <td>${new Date(meta.uploadedAt).toLocaleString()}</td>
+          <td>
+            <div class="actions">
+              <a class="btn" href="${raw}" target="_blank" style="text-decoration:none;display:inline-block;">Open</a>
+              <button class="btn btn-copy">Copy</button>
+              <button class="btn btn-delete-file">Delete</button>
+            </div>
+          </td>
+        `;
+        // Copy button: copy preview link (recommended for Discord embeds)
+        tr.querySelector('.btn-copy').onclick = async () => {
+          try {
+            await navigator.clipboard.writeText(preview);
+            tr.querySelector('.btn-copy').textContent = 'Copied!';
+            setTimeout(() => tr.querySelector('.btn-copy').textContent = 'Copy', 1200);
+          } catch {
+            tr.querySelector('.btn-copy').textContent = 'Err';
+            setTimeout(() => tr.querySelector('.btn-copy').textContent = 'Copy', 1200);
+          }
+        };
+        // Delete file
+        tr.querySelector('.btn-delete-file').onclick = async () => {
+          if (!confirm('Delete file "' + meta.original + '" ? This removes the file from disk.')) return;
+          const resp = await fetch('/admin/api/delete-file', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'same-origin',
+            body: JSON.stringify({ id })
+          });
+          const result = await resp.json();
+          if (result.success) {
+            showMsg('File deleted');
+            tr.remove();
+          } else {
+            showMsg(result.error || 'Error deleting file');
+          }
+        };
+
+        tbody.appendChild(tr);
+      });
+    }
+
+    // Refresh all admin data
+    async function refreshAdminData() {
+      try {
+        const userData = await fetchUsers();
+        renderUsers(userData.users);
+        renderInvites(userData.invites);
+        const files = await fetchFiles();
+        renderFiles(files);
+      } catch (e) {
+        console.error(e);
+        showMsg('Failed to refresh data');
+      }
+    }
+
+    refreshAdminData();
+
+    document.getElementById('genInviteBtn').onclick = async () => {
+      const btn = document.getElementById('genInviteBtn');
+      btn.disabled = true;
+      btn.textContent = 'Generating...';
+      document.getElementById('newInviteMsg').textContent = '';
+      try {
+        const resp = await fetch('/admin/api/generate-invite', { method: 'POST', credentials: 'same-origin' });
+        const result = await resp.json();
+        if (result.success && result.inviteKey) {
+          document.getElementById('newInviteMsg').textContent = 'New Invite Key: ' + result.inviteKey;
+          refreshAdminData();
+        } else {
+          document.getElementById('newInviteMsg').textContent = 'Error generating invite.';
+        }
+      } catch {
+        document.getElementById('newInviteMsg').textContent = 'Error generating invite.';
+      }
+      btn.disabled = false;
+      btn.textContent = 'Generate Invite';
+    };
+  </script>
+</body>
+</html>

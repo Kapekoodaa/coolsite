@@ -1,35 +1,105 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8" />
-<title>Register</title>
-<style>
-body{background:#1a1a1a;color:#fff;font-family:Arial,sans-serif;display:flex;justify-content:center;align-items:center;height:100vh;margin:0;}
-form{background:#2a2a2a;padding:30px;border-radius:12px;display:flex;flex-direction:column;width:320px;}
-input{margin-bottom:12px;padding:10px;border-radius:6px;border:none;background:#1a1a1a;color:#fff;}
-button{padding:10px;background:#6a3960;color:#fff;border:none;border-radius:6px;cursor:pointer;}
-button:hover{background:#8a5a80;}
-a{color:#6a3960;text-decoration:none;margin-top:10px;display:inline-block;}
-a:hover{color:#8a5a80;}
-.heading{margin:0 0 12px 0;}
-.small{font-size:12px;color:#bbb;margin-top:8px;}
-</style>
+  <meta charset="utf-8" />
+  <title>Register</title>
+  <style>
+    body {
+      background: #1a1a1a;
+      color: #fff;
+      font-family: Arial, sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+    form {
+      background: #2a2a2a;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 0 10px black, 0 0 20px violet, 0 0 30px palevioletred;
+      display: flex;
+      flex-direction: column;
+      width: 320px;
+    }
+    input {
+      font-family: Helvetica, Arial, sans-serif;
+      font-weight: bold;
+      font-size: 16px;
+      margin-bottom: 12px;
+      padding: 10px;
+      border-radius: 6px;
+      background-color: #1a1a1a;
+      border: 2px solid #6a3960;
+      outline: none;
+      color: #fff;
+      transition: all 0.3s ease;
+    }
+    input:hover {
+      border-color: #9a5d8a;
+    }
+    input:focus {
+      border-color: #c46fad;
+      box-shadow: 0 0 8px rgba(196, 111, 173, 0.7);
+      background-color: #262626;
+    }
+    button {
+      padding: 10px;
+      background: #6a3960;
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    button:hover {
+      background: #8a5a80;
+      box-shadow: 0 0 15px rgba(106, 57, 96, 0.8);
+      transform: scale(1.05) rotate(1deg) rotateY(-3deg);
+    }
+    a {
+      color: #6a3960;
+      text-decoration: none;
+      margin-top: 10px;
+      display: inline-block;
+      transition: all 0.2s ease;
+    }
+    a:hover {
+      color: #8a5a80;
+    }
+    .heading {
+      margin: 0 0 12px 0;
+    }
+    .small {
+      font-size: 12px;
+      color: #bbb;
+      margin-top: 8px;
+    }
+    h2 {
+      text-align: center;
+      font-family: Helvetica, Arial, sans-serif;
+      color: violet;
+      text-shadow: 0 0 10px rgba(238, 130, 238, 0.7);
+      letter-spacing: 1px;
+      margin-bottom: 10px;
+    }
+  </style>
 </head>
 <body>
-<form action="/register" method="POST">
-  <h2 class="heading">Register</h2>
-  <input name="username" placeholder="Username" required />
-  <input name="password" type="password" placeholder="Password" required />
-  <input name="invite" placeholder="Invite Code" required oninput="this.value=this.value.trim()" />
-  <button type="submit">Register</button>
-  <a href="/login">Back to Login</a>
-  <div class="small">Invite codes are single-use and case-insensitive.</div>
-</form>
-
-<script>
-const params = new URLSearchParams(window.location.search);
-if (params.get('error')) alert(decodeURIComponent(params.get('error')));
-if (params.get('success')) alert(decodeURIComponent(params.get('success')));
-</script>
+  <form action="/register" method="POST">
+    <h2 class="heading">Register</h2>
+    <input name="username" placeholder="Username" required />
+    <input name="password" type="password" placeholder="Password" required />
+    <input name="invite" placeholder="Invite Code" required oninput="this.value=this.value.trim()" />
+    <button type="submit">Register</button>
+    <a href="/login">Login</a>
+  </form>
+  <script>
+    // Show error/success alerts from query params
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('error')) alert(decodeURIComponent(params.get('error')));
+    if (params.get('success')) alert(decodeURIComponent(params.get('success')));
+  </script>
 </body>
 </html>
